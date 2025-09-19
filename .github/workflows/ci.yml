@@ -47,4 +47,4 @@ jobs:
             ./${{ matrix.service }}
 
       - name: Push the Image
-        run: Docker push sahayavijay/fib-${{ matrix.service }}:latest
+        run: docker push sahayavijay/fib-${{ matrix.service }}:latest
