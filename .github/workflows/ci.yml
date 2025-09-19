@@ -22,7 +22,7 @@ jobs:
         run: docker build -f client/Dockerfile.dev -t test-image ./client
 
       - name: Run tests ( Only in Client, we can setup for all services too )
-        run: docker run --rm test-image npm test
+        run: docker run -e CI=true test-image npm test
   build:
     needs: test
     runs-on: ubuntu-latest
