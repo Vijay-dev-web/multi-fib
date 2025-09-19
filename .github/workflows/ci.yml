@@ -23,3 +23,28 @@ jobs:
 
       - name: Run tests ( Only in Client, we can setup for all services too )
         run: docker run --rm test-image npm test
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [client, nginx, server, worker]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login into Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Production Image
+        run: |
+          docker build \
+            -f ./${{ matrix.service }}/Dockerfile \
+            -t sahayavijay/fib-${{ matrix.service }}:latest \
+            ./${{ matrix.service }}
+
+      - name: Push the Image
+        run: Docker push sahayavijay/fib-${{ matrix.service }}:latest
