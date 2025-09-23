@@ -1,12 +1,13 @@
 version: "3"
 services:
   client:
-    image: "sahayavijay/fib-client"
+    image: "sahayavijay/fib-client:latest"
     mem_limit: 128m
     hostname: client
+
   server:
-    image: "sahayavijay/fib-server"
-    mem_limit: 1
+    image: "sahayavijay/fib-server:latest"
+    mem_limit: 1g
     hostname: api
     environment:
       - REDIS_HOST=$REDIS_HOST
@@ -16,15 +17,17 @@ services:
       - PGDATABASE=$PGDATABASE
       - PGPASSWORD=$PGPASSWORD
       - PGPORT=$PGPORT
+
   worker:
-    image: "sahayavijay/fib-worker"
+    image: "sahayavijay/fib-worker:latest"
     mem_limit: 128m
     hostname: worker
     environment:
       - REDIS_HOST=$REDIS_HOST
       - REDIS_PORT=$REDIS_PORT
+
   nginx:
-    image: "sahayavijay/fib-nginx"
+    image: "sahayavijay/fib-nginx:latest"
     mem_limit: 128m
     hostname: nginx
     ports:

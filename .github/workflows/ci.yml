@@ -6,6 +6,9 @@ on:
       - master
 
 jobs:
+  # -------------------------------
+  # 1️⃣ Test job (Client only)
+  # -------------------------------
   test:
     runs-on: ubuntu-latest
     steps:
@@ -21,8 +24,12 @@ jobs:
       - name: Build test image
         run: docker build -f client/Dockerfile.dev -t test-image ./client
 
-      - name: Run tests ( Only in Client, we can setup for all services too )
+      - name: Run tests (client only)
         run: docker run -e CI=true test-image npm test
+
+  # -------------------------------
+  # 2️⃣ Build & Push Production Images
+  # -------------------------------
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -33,7 +40,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Login into Dockerhub
+      - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -48,6 +55,10 @@ jobs:
 
       - name: Push the Image
         run: docker push sahayavijay/fib-${{ matrix.service }}:latest
+
+  # -------------------------------
+  # 3️⃣ Deploy to Elastic Beanstalk
+  # -------------------------------
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -61,6 +72,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Install AWS Elastic Beanstalk CLI
         run: pip install awsebcli --upgrade --user
 
